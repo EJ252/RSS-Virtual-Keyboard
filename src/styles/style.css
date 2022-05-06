@@ -1,0 +1,88 @@
+@import url("./normalize.css");
+* {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html {
+  display: block;
+  font-family: Verdana, Geneva, Tahoma;
+}
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 50px;
+  height: 100vh;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  background-color: #6f6c9e;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#bfd2de), to(#6f6c9e));
+  background-image: linear-gradient(#bfd2de, #6f6c9e);
+  padding: 10px;
+}
+
+h1, .h1 {
+  font-size: 64px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.keyboard {
+  margin: 0 auto;
+}
+
+.keyboard__body {
+  height: 333px;
+  width: 755px;
+  padding: 5px;
+  border: 3px solid #e3c09b;
+  border-radius: 5px;
+  background-color: #bb7db2;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.keyboard__key {
+  position: relative;
+  height: 45px;
+  width: 45px;
+  border-radius: 5px;
+  border: none;
+  background-color: rgba(215, 203, 212, 0.82);
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: rgba(215, 203, 212, 0.9);
+}
+
+.keyboard__special-keys {
+  width: 100px;
+  background-color: rgba(215, 203, 212, 0.5);
+  -webkit-tap-highlight-color: rgba(215, 203, 212, 0.9);
+}
+
+.keyboard__key:active {
+  background-color: #d7cbd4;
+  border: 1px solid #6f6c9e;
+}
+
+.keyboard__key-light:after {
+  content: '';
+  position: absolute;
+  border-radius: 4px;
+  height: 4.5px;
+  width: 10px;
+  top: 3px;
+  right: 3px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.keyboard__key-light_active:after {
+  background-color: #ffffff;
+}
+/*# sourceMappingURL=style.css.map */

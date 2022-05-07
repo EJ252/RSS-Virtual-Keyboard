@@ -19,6 +19,9 @@ body {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   background-color: #6f6c9e;
   background-image: -webkit-gradient(linear, left top, left bottom, from(#bfd2de), to(#6f6c9e));
   background-image: linear-gradient(#bfd2de, #6f6c9e);
@@ -156,5 +159,17 @@ h1, .h1 {
   background-repeat: no-repeat;
   background-size: 21px;
   background-position: center;
+}
+
+.text-area {
+  width: 500px;
+  height: 14em;
+  border: 3px solid #e3c09b;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.text-area:focus {
+  outline: none;
 }
 /*# sourceMappingURL=style.css.map */

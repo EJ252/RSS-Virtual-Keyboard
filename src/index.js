@@ -4,6 +4,8 @@ const Keyboard = {
     keyboardBody: null,
     keys: [],
     inputKeys: [],
+    textarea: null,
+    click: new Event('click'),
   },
 
   properties: {
@@ -39,25 +41,31 @@ const Keyboard = {
     info.innerText = 'Switch language: left ctrl + left alt \n App created in Windows 10';
     document.body.appendChild(info);
 
-    const area = document.body.querySelector('.text-area');
-    document.body.addEventListener('keyup', (e) => {
-      if (e.key.length < 3 && this.keyCodeArr.includes(e.code)) {
+    this.elements.textarea = document.body.querySelector('.text-area');
+    document.body.addEventListener('keydown', (e) => {
+      e.preventDefault();
+    });
+
+
+    document.body.addEventListener('keydown', (e) => {
+      if (e.key.length < 3 && this.keyCodeArr.includes(e.code) && e.code !== 'Space') {
         console.log(e.key);
         
-        area.value += e.key;
+        this.elements.textarea.value += e.key;
       } 
     });
 
     for (let i = 0; i < this.elements.inputKeys.length; i++) {
       this.elements.inputKeys[i].addEventListener('click', () => {
         console.log(this.elements.inputKeys[i].innerText);
-        area.value += this.elements.inputKeys[i].innerText;
+        this.elements.textarea.value += this.elements.inputKeys[i].innerText;
       })
     } 
 
     this.changeLang('ControlLeft', 'AltLeft'); //call language change function
     this.toggleShift();
     this.toggleCaps();
+    this.specialKeys();
   },
   _createKeys(lang) {
     this.elements.keyboardBody.innerHTML = '';
@@ -160,8 +168,6 @@ const Keyboard = {
         funcReverse();
       });
     })
-
-
   },
 
   changeLang() {
@@ -185,6 +191,14 @@ const Keyboard = {
 
   toggleCaps() {
     const capslock = this.elements.keyboardBody.querySelector('.keyboard__caps-lock'); //capslock
+    let click = new Event('click');
+
+    document.addEventListener('keyup', (e) => {
+      if (e.code === 'CapsLock') {
+        capslock.dispatchEvent(click);
+      }
+    })
+
     capslock.addEventListener('click', () => {
       if (this.properties.capslock === 0) {
         this.properties.capslock = 1;
@@ -276,6 +290,65 @@ const Keyboard = {
     for (let i = 0; i < keyLayout.length; i++) {
       this.elements.inputKeys[i].innerText = keyLayout[i];
     } 
+  },
+
+  specialKeys() {
+    const tabKey = this.elements.keyboardBody.querySelector('.keyboard__tab'); 
+    const enterKey = this.elements.keyboardBody.querySelector('.keyboard__enter'); 
+    const spaceKey = this.elements.keyboardBody.querySelector('.keyboard__space'); 
+    const backspaceKey = this.elements.keyboardBody.querySelector('.keyboard__backspace'); 
+    const delKey = this.elements.keyboardBody.querySelector('.keyboard__del'); 
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Tab') {
+        tabKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'Enter') {
+        enterKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'Space') {
+        spaceKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'Backspace') {
+        backspaceKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'Delete') {
+        delKey.dispatchEvent(this.elements.click);
+      }
+
+    });
+
+    tabKey.addEventListener('click', () => {
+      this.elements.textarea.value += '\t';
+    });
+
+    enterKey.addEventListener('click', () => {
+      this.elements.textarea.value += '\n';
+    });
+
+    spaceKey.addEventListener('click', () => {
+      this.elements.textarea.value += ' ';
+    });
+
+    backspaceKey.addEventListener('click', () => {
+      let start = this.elements.textarea.selectionStart;
+      let end = this.elements.textarea.selectionEnd;
+      if (start !== end) { 
+        this.elements.textarea.setRangeText('', start, end); 
+      } else { 
+        this.elements.textarea.setRangeText('', start - 1, end); 
+      }
+    });
+
+    delKey.addEventListener('click', () => {
+      let start = this.elements.textarea.selectionStart;
+      let end = this.elements.textarea.selectionEnd;
+      if (start !== end) { 
+        this.elements.textarea.setRangeText('', start, end); 
+      } else if (end < this.elements.textarea.value.length) {
+        this.elements.textarea.setRangeText('', start, end + 1); 
+      }
+    });
   },
 };
 window.addEventListener('DOMContentLoaded', Keyboard.init());

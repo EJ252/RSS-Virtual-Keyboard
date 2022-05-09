@@ -371,13 +371,13 @@ const Keyboard = {
         arrowLeftKey.dispatchEvent(this.elements.click);
       }
       if (e.code === 'ArrowUp') {
-        arrowLeftKey.dispatchEvent(this.elements.click);
+        arrowUpKey.dispatchEvent(this.elements.click);
       }
       if (e.code === 'ArrowDown') {
-        arrowLeftKey.dispatchEvent(this.elements.click);
+        arrowDownKey.dispatchEvent(this.elements.click);
       }
       if (e.code === 'ArrowRight') {
-        arrowLeftKey.dispatchEvent(this.elements.click);
+        arrowRightKey.dispatchEvent(this.elements.click);
       }
 
     });

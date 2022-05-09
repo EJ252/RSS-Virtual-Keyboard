@@ -1,10 +1,13 @@
 const Keyboard = {
   elements: {
+    h1: null,
+    textareaTag: null,
     main: null,
+    info: null,
     keyboardBody: null,
     keys: [],
     inputKeys: [],
-    textarea: null,
+    textarea: '',
     click: new Event('click'),
     keyLayoutCurrent: ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 
                       'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
@@ -34,22 +37,28 @@ const Keyboard = {
   init() {
     this.elements.main = document.createElement('div');
     this.elements.keyboardBody = document.createElement('div');
+    this.elements.h1 = document.createElement('H1');
+    this.elements.textareaTag = document.createElement('textarea');
+    this.elements.info = document.createElement('div');
 
     this.elements.main.classList.add('keyboard');
     this.elements.keyboardBody.classList.add('keyboard__body');
+    this.elements.textareaTag.classList.add('text-area');
+    this.elements.info.classList.add('info');
     this.elements.keyboardBody.appendChild(this._createKeys(localStorage.languageNow));
 
     this.elements.keys = this.elements.keyboardBody.querySelectorAll('.keyboard__key');
-    ////////////////////
-    this.elements.inputKeys = this.elements.keyboardBody.querySelectorAll('.keyboard__key:not(.keyboard__special)');
-//////////////
-    this.elements.main.appendChild(this.elements.keyboardBody);
-    document.body.appendChild(this.elements.main);
 
-    const info = document.createElement('div');
-    info.classList.add('info');
-    info.innerText = 'Switch language: left ctrl + left alt \n App created in Windows 10';
-    document.body.appendChild(info);
+    this.elements.inputKeys = this.elements.keyboardBody.querySelectorAll('.keyboard__key:not(.keyboard__special)');
+
+    this.elements.main.appendChild(this.elements.keyboardBody);
+    document.body.appendChild(this.elements.h1);
+    document.body.appendChild(this.elements.textareaTag);
+    document.body.appendChild(this.elements.main);
+    document.body.appendChild(this.elements.info);
+    
+    this.elements.h1.innerText = 'RSS Virtual Keyboard';
+    this.elements.info.innerText = 'Switch language: left ctrl + left alt \n App created in Windows 10';
 
     this.elements.textarea = document.body.querySelector('.text-area');
     document.body.addEventListener('keydown', (e) => {
@@ -59,14 +68,15 @@ const Keyboard = {
 
     document.body.addEventListener('keydown', (e) => {
       if (this.keyCodeArrShort.includes(e.code)) {
-        //console.log(e);
-        this.elements.textarea.value += this.elements.keyLayoutCurrent[this.keyCodeArrShort.indexOf(e.code)];
+        let newSymbol = this.elements.keyLayoutCurrent[this.keyCodeArrShort.indexOf(e.code)];
+        this.addSymbol(newSymbol);
       }
     });
 
     for (let i = 0; i < this.elements.inputKeys.length; i++) {
       this.elements.inputKeys[i].addEventListener('click', () => {
-        this.elements.textarea.value += this.elements.inputKeys[i].innerText;
+        let newSymbol = this.elements.inputKeys[i].innerText;
+        this.addSymbol(newSymbol);
       })
     } 
 
@@ -209,6 +219,8 @@ const Keyboard = {
     })
 
     capslock.addEventListener('click', () => {
+      this.elements.textarea.focus();
+
       if (this.properties.capslock === 0) {
         this.properties.capslock = 1;
       } else {
@@ -367,7 +379,6 @@ const Keyboard = {
         delKey.dispatchEvent(this.elements.click);
       }
       if (e.code === 'ArrowLeft') {
-        console.log(22)
         arrowLeftKey.dispatchEvent(this.elements.click);
       }
       if (e.code === 'ArrowUp') {
@@ -383,28 +394,32 @@ const Keyboard = {
     });
 
     tabKey.addEventListener('click', () => {
-      this.elements.textarea.value += '\t';
+      this.addSymbol('\t');
     });
 
     enterKey.addEventListener('click', () => {
-      this.elements.textarea.value += '\n';
+      this.addSymbol('\n');
     });
 
     spaceKey.addEventListener('click', () => {
-      this.elements.textarea.value += ' ';
+      this.addSymbol(' ');
     });
 
     backspaceKey.addEventListener('click', () => {
+      this.elements.textarea.focus();
       let start = this.elements.textarea.selectionStart;
       let end = this.elements.textarea.selectionEnd;
       if (start !== end) { 
         this.elements.textarea.setRangeText('', start, end); 
       } else { 
-        this.elements.textarea.setRangeText('', start - 1, end); 
+        if (start > 0) {
+          this.elements.textarea.setRangeText('', start - 1, end); 
+        }
       }
     });
 
     delKey.addEventListener('click', () => {
+      this.elements.textarea.focus();
       let start = this.elements.textarea.selectionStart;
       let end = this.elements.textarea.selectionEnd;
       if (start !== end) { 
@@ -415,19 +430,26 @@ const Keyboard = {
     });
 
     arrowLeftKey.addEventListener('click', () => {
-      this.elements.textarea.value += '◄';
+      this.addSymbol('◄');
     });
     arrowUpKey.addEventListener('click', () => {
-      this.elements.textarea.value += '▲';
+      this.addSymbol('▲');
     });
     arrowDownKey.addEventListener('click', () => {
-      this.elements.textarea.value += '▼';
+      this.addSymbol('▼');
     });
     arrowRightKey.addEventListener('click', () => {
-      this.elements.textarea.value += '►';
+      this.addSymbol('►');
     });
   },
+
+  addSymbol(newSymbol) {
+    let start = this.elements.textarea.selectionStart
+    let end = this.elements.textarea.selectionEnd
+    this.elements.textarea.focus();
+
+    this.elements.textarea.setRangeText(newSymbol, start, end, 'start'); 
+    this.elements.textarea.selectionStart = this.elements.textarea.selectionEnd += 1;
+  }
 };
 window.addEventListener('DOMContentLoaded', Keyboard.init());
-//document.addEventListener('click', () => Keyboard.changeKeys(localStorage.languageNow, Keyboard.properties.shift));
-//'ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight',

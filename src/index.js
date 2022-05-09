@@ -61,11 +61,10 @@ const Keyboard = {
     this.elements.info.innerText = 'Switch language: left ctrl + left alt \n App created in Windows 10';
 
     this.elements.textarea = document.body.querySelector('.text-area');
-    document.body.addEventListener('keydown', (e) => {
-      e.preventDefault();
-    });
 
     document.body.addEventListener('keydown', (e) => {
+      e.preventDefault();
+
       if (this.keyCodeArrShort.includes(e.code)) {
         const newSymbol = this.elements.keyLayoutCurrent[this.keyCodeArrShort.indexOf(e.code)];
         this.addSymbol(newSymbol);
@@ -138,6 +137,8 @@ const Keyboard = {
     const mouseUpEvent = new Event('mouseup');
     const mouseDownEvent = new Event('mousedown');
     let status = false;
+    let repeatL;
+    let repeatR;
 
     const func = () => {
       if (status === true) {
@@ -164,14 +165,20 @@ const Keyboard = {
     };
 
     document.body.addEventListener('keyup', (e) => {
-      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
-        shiftKey.dispatchEvent(mouseUpEvent);
-      }
+      if (e.code === 'ShiftLeft') shiftKey.dispatchEvent(mouseUpEvent);
+      if (e.code === 'ShiftRight') shiftKeyR.dispatchEvent(mouseUpEvent);
+      if (repeatL === true) shiftKey.classList.remove('animation-start');
+      if (repeatR === true) shiftKeyR.classList.remove('animation-start');
     });
 
     document.body.addEventListener('keydown', (e) => {
-      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+      if (e.code === 'ShiftLeft') {
+        repeatL = e.repeat;
         shiftKey.dispatchEvent(mouseDownEvent);
+      }
+      if (e.code === 'ShiftRight') {
+        repeatR = e.repeat;
+        shiftKeyR.dispatchEvent(mouseDownEvent);
       }
     });
 
@@ -244,7 +251,11 @@ const Keyboard = {
     };
 
     this.elements.keys.forEach((x) => {
-      x.addEventListener('click', () => animation(x));
+      if (x.classList.contains('keyboard__shift', 'keyboard__shiftR')) {
+        x.addEventListener('click', () => animation(x));
+        return;
+      }
+      x.addEventListener('mousedown', () => animation(x));
     });
 
     document.addEventListener('keydown', (e) => {
@@ -354,7 +365,6 @@ const Keyboard = {
     const arrowRightKey = this.elements.keyboardBody.querySelector('.keyboard__right');
 
     document.addEventListener('keydown', (e) => {
-      this.getAnimation();
       if (e.code === 'Tab') {
         tabKey.dispatchEvent(this.elements.click);
       }
@@ -439,7 +449,7 @@ const Keyboard = {
 
     this.elements.textarea.setRangeText(newSymbol, start, end, 'start');
     this.elements.textarea.selectionStart += 1;
-    this.elements.textarea.selectionEnd += 1;
+    this.elements.textarea.selectionEnd = this.elements.textarea.selectionStart;
   },
 };
 window.addEventListener('DOMContentLoaded', Keyboard.init());

@@ -6,6 +6,10 @@ const Keyboard = {
     inputKeys: [],
     textarea: null,
     click: new Event('click'),
+    keyLayoutCurrent: ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 
+                      'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
+                      'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 
+                      'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '?'],
   },
 
   properties: {
@@ -19,6 +23,12 @@ const Keyboard = {
     'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter', 
     'ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ShiftRight', 
     'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight', 'Delete'
+  ],
+  keyCodeArrShort: [
+    'Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal',
+    'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight',
+    'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 
+    'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash'
   ],
 
   init() {
@@ -48,16 +58,14 @@ const Keyboard = {
 
 
     document.body.addEventListener('keydown', (e) => {
-      if (e.key.length < 3 && this.keyCodeArr.includes(e.code) && e.code !== 'Space') {
-        console.log(e.key);
-        
-        this.elements.textarea.value += e.key;
-      } 
+      if (this.keyCodeArrShort.includes(e.code)) {
+        //console.log(e);
+        this.elements.textarea.value += this.elements.keyLayoutCurrent[this.keyCodeArrShort.indexOf(e.code)];
+      }
     });
 
     for (let i = 0; i < this.elements.inputKeys.length; i++) {
       this.elements.inputKeys[i].addEventListener('click', () => {
-        console.log(this.elements.inputKeys[i].innerText);
         this.elements.textarea.value += this.elements.inputKeys[i].innerText;
       })
     } 
@@ -66,6 +74,7 @@ const Keyboard = {
     this.toggleShift();
     this.toggleCaps();
     this.specialKeys();
+    this.getAnimation();
   },
   _createKeys(lang) {
     this.elements.keyboardBody.innerHTML = '';
@@ -207,7 +216,43 @@ const Keyboard = {
       }
       this.changeInner(localStorage.languageNow, this.properties.shift, this.properties.capslock);
       capslock.classList.toggle('keyboard__key-light_active');
+      capslock.classList.add('animation');
     });
+
+    capslock.addEventListener("animationend", AnimationHandler, false);
+    function AnimationHandler () {
+      capslock.classList.remove('animation');
+    }
+  },
+
+  getAnimation() {
+    const animation = (x) => {
+      x.classList.add('animation');
+      x.addEventListener("animationend", AnimationHandler, false);
+      function AnimationHandler () {
+        x.classList.remove('animation');
+      }
+    };
+
+    this.elements.keys.forEach(x => {
+      x.addEventListener('click', () => animation(x));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (this.keyCodeArr.includes(e.code)) {
+        let x = this.keyCodeArr.indexOf(e.code);
+        this.elements.keys[x].classList.add('animation-start');
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (this.keyCodeArr.includes(e.code)) {
+        let x = this.keyCodeArr.indexOf(e.code);
+        this.elements.keys[x].classList.remove('animation-start');
+        animation(this.elements.keys[x]);
+      }
+    })
+
   },
 
   changeInner(lang, shift, caps) {
@@ -290,6 +335,7 @@ const Keyboard = {
     for (let i = 0; i < keyLayout.length; i++) {
       this.elements.inputKeys[i].innerText = keyLayout[i];
     } 
+    this.elements.keyLayoutCurrent = keyLayout;
   },
 
   specialKeys() {
@@ -298,8 +344,13 @@ const Keyboard = {
     const spaceKey = this.elements.keyboardBody.querySelector('.keyboard__space'); 
     const backspaceKey = this.elements.keyboardBody.querySelector('.keyboard__backspace'); 
     const delKey = this.elements.keyboardBody.querySelector('.keyboard__del'); 
+    const arrowLeftKey = this.elements.keyboardBody.querySelector('.keyboard__left'); 
+    const arrowUpKey = this.elements.keyboardBody.querySelector('.keyboard__up'); 
+    const arrowDownKey = this.elements.keyboardBody.querySelector('.keyboard__down'); 
+    const arrowRightKey = this.elements.keyboardBody.querySelector('.keyboard__right'); 
     
     document.addEventListener('keydown', (e) => {
+      this.getAnimation();
       if (e.code === 'Tab') {
         tabKey.dispatchEvent(this.elements.click);
       }
@@ -314,6 +365,19 @@ const Keyboard = {
       }
       if (e.code === 'Delete') {
         delKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'ArrowLeft') {
+        console.log(22)
+        arrowLeftKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'ArrowUp') {
+        arrowLeftKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'ArrowDown') {
+        arrowLeftKey.dispatchEvent(this.elements.click);
+      }
+      if (e.code === 'ArrowRight') {
+        arrowLeftKey.dispatchEvent(this.elements.click);
       }
 
     });
@@ -349,7 +413,21 @@ const Keyboard = {
         this.elements.textarea.setRangeText('', start, end + 1); 
       }
     });
+
+    arrowLeftKey.addEventListener('click', () => {
+      this.elements.textarea.value += '◄';
+    });
+    arrowUpKey.addEventListener('click', () => {
+      this.elements.textarea.value += '▲';
+    });
+    arrowDownKey.addEventListener('click', () => {
+      this.elements.textarea.value += '▼';
+    });
+    arrowRightKey.addEventListener('click', () => {
+      this.elements.textarea.value += '►';
+    });
   },
 };
 window.addEventListener('DOMContentLoaded', Keyboard.init());
 //document.addEventListener('click', () => Keyboard.changeKeys(localStorage.languageNow, Keyboard.properties.shift));
+//'ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight',
